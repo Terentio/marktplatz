@@ -43,22 +43,6 @@ class MarktplatzQuery {
   }
 }
 
-
-
-// WH-1000XM3 Query
-const searchOptions = {
-  query: '1000', // WH-1000XM3
-  categoryId: 37, // headpghones
-  attributes: [
-    'S,30',
-    'S,256',
-    'S,76',
-    'M,8846',
-    'M,8847'
-  ],
-  startDateFrom: 'always'
-}
-
 const writeData = (data, filename) => {
   const timeStamp = (new Date).toISOString().replace(/z|t/gi,' ').trim()
   const reportDir = path.resolve(`${__dirname}/data`)
@@ -100,6 +84,20 @@ const queryMarktplatz = async searchOptions => {
   })
 
   return ads
+}
+
+// WH-1000XM3 Query
+const searchOptions = {
+  query: '1000', // WH-1000XM3
+  categoryId: 37, // headpghones
+  attributes: [
+    'S,30',
+    'S,256',
+    'S,76',
+    'M,8846',
+    'M,8847'
+  ],
+  startDateFrom: 'always'
 }
 
 queryMarktplatz(searchOptions)
