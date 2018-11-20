@@ -4,8 +4,6 @@ const fs = require('fs')
 const path = require('path')
 const cheerio = require('cheerio')
 
-const dataDir = path.join(__dirname + '/data')
-
 class MarktplatzQuery {
   constructor(options) {
     this.baseUrl = 'https://www.marktplaats.nl/z.html';
