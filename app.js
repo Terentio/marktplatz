@@ -1,5 +1,5 @@
 const axios = require('axios')
-const url = require('url')
+const cheerio = require('cheerio')
 
 class MarktplatzQuery {
   constructor(options)  {
@@ -55,10 +55,23 @@ const searchOptions = {
 
 const queryMarktplatz = async searchOptions => {
   const url = new MarktplatzQuery(searchOptions).getUrl()
-  console.log(`querying url: ${url}`)
   const result = await axios.get(url)
-  console.log(result.data);
+  const $ = cheerio.load(result.data)
+  const ads = []
 
+  $('.search-result .listing').each((i, el) => {
+    
+    const ad = {
+      title: $(el).find('.mp-listing-title').text(),
+      description: $(el).find('.mp-listing-description').text(),
+      price: $(el).find('.price-new').text(),
+    }
+
+    ads.push(ad)
+
+  })
+  
+  console.log(ads)
 }
 
 queryMarktplatz(searchOptions)
