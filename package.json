@@ -1,0 +1,7 @@
+{
+  "name": "marktplatz",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Richard Bieringa <richardbieringa@gmail.com>",
+  "license": "MIT"
+}
