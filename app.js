@@ -36,10 +36,6 @@ class MarktplatzQuery {
     if (params) {
       urlParams = new URLSearchParams(params)
       url.search = urlParams.toString()
-      console.log('Params in list')
-      console.log(params)
-      console.log('\n\n\n')
-      console.log(`params added: ${url.search}`)
     }
 
     return url.toString()
@@ -63,6 +59,24 @@ const searchOptions = {
   startDateFrom: 'always'
 }
 
+const writeData = (data, filename) => {
+  const timeStamp = (new Date).toISOString().replace(/z|t/gi,' ').trim()
+  const reportDir = path.resolve(`${__dirname}/data`)
+
+  // if report dir does not exist
+  if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir)
+
+  try {
+    fs.writeFileSync(
+      path.resolve(`${reportDir}/data-`),
+      JSON.stringify(data),
+      'utf8'
+    )
+
+  } catch(err) {
+    console.error(err)
+  }
+}
 
 const queryMarktplatz = async searchOptions => {
   const url = new MarktplatzQuery(searchOptions).getUrl()
@@ -89,4 +103,5 @@ const queryMarktplatz = async searchOptions => {
 }
 
 queryMarktplatz(searchOptions)
-  .then(res => console.log(res))
+  .then(data => writeData(data))
+  .catch(err => console.error(err))
