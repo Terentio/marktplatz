@@ -1,11 +1,16 @@
 const axios = require('axios')
+const fs = require('fs')
+
+const path = require('path')
 const cheerio = require('cheerio')
 
+const dataDir = path.join(__dirname + '/data')
+
 class MarktplatzQuery {
-  constructor(options)  {
+  constructor(options) {
     this.baseUrl = 'https://www.marktplaats.nl/z.html';
     this.queryOptions = {
-      query: options.query,           // query substring
+      query: options.query, // query substring
       categoryId: options.categoryId, // category id of query
       attributes: options.attributes, // array of attributes
       postcode: options.postcode,
@@ -21,9 +26,9 @@ class MarktplatzQuery {
     // construct query params
     for (let key in this.queryOptions) {
       const value = this.queryOptions[key];
-      
+
       // marktlplatz accepts arrays and strings as query values
-      if (value && typeof(value) === 'string') params.push([key, value])
+      if (value && typeof (value) === 'string') params.push([key, value])
       if (value && Array.isArray(value)) params.push([key, value.join(', ')])
     }
 
@@ -31,6 +36,10 @@ class MarktplatzQuery {
     if (params) {
       urlParams = new URLSearchParams(params)
       url.search = urlParams.toString()
+      console.log('Params in list')
+      console.log(params)
+      console.log('\n\n\n')
+      console.log(`params added: ${url.search}`)
     }
 
     return url.toString()
@@ -43,11 +52,13 @@ class MarktplatzQuery {
 const searchOptions = {
   query: '1000', // WH-1000XM3
   categoryId: 37, // headpghones
+
   attributes: [
+    'S,30',
     'S,256',
     'S,76',
     'M,8846',
-    'M,8847',
+    'M,8847'
   ],
   startDateFrom: 'always'
 }
@@ -55,23 +66,27 @@ const searchOptions = {
 
 const queryMarktplatz = async searchOptions => {
   const url = new MarktplatzQuery(searchOptions).getUrl()
+  console.log(`Querying url: ${url}`)
   const result = await axios.get(url)
   const $ = cheerio.load(result.data)
   const ads = []
 
-  $('.search-result .listing').each((i, el) => {
-    
+  $('.search-result').each((i, el) => {
+    // console.log($(el).data())
+
     const ad = {
-      title: $(el).find('.mp-listing-title').text(),
-      description: $(el).find('.mp-listing-description').text(),
-      price: $(el).find('.price-new').text(),
+      id: $(el).data('itemId'),
+      title: $(el).find('.listing .mp-listing-title').text().trim(),
+      description: $(el).find('.listing .mp-listing-description').text().trim(),
+      price: $(el).find('.listing .price-new').text().trim(),
     }
 
-    ads.push(ad)
+    if (ad.id) ads.push(ad)
 
   })
-  
-  console.log(ads)
+
+  return ads
 }
 
 queryMarktplatz(searchOptions)
+  .then(res => console.log(res))
