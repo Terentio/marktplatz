@@ -28,8 +28,8 @@ class MarktplatzQuery {
       const value = this.queryOptions[key];
 
       // marktlplatz accepts arrays and strings as query values
-      if (value && typeof (value) === 'string') params.push([key, value])
       if (value && Array.isArray(value)) params.push([key, value.join(', ')])
+      else if (value) params.push([key, value])
     }
 
     // if params are defined add them to url constructor
@@ -37,6 +37,9 @@ class MarktplatzQuery {
       urlParams = new URLSearchParams(params)
       url.search = urlParams.toString()
     }
+
+    console.log('PARAMS:')
+    console.log(params)
 
     return url.toString()
   }
@@ -48,7 +51,6 @@ class MarktplatzQuery {
 const searchOptions = {
   query: '1000', // WH-1000XM3
   categoryId: 37, // headpghones
-
   attributes: [
     'S,30',
     'S,256',
@@ -68,7 +70,7 @@ const writeData = (data, filename) => {
 
   try {
     fs.writeFileSync(
-      path.resolve(`${reportDir}/data-`),
+      path.resolve(`${reportDir}/data-${filename}`),
       JSON.stringify(data),
       'utf8'
     )
@@ -103,5 +105,5 @@ const queryMarktplatz = async searchOptions => {
 }
 
 queryMarktplatz(searchOptions)
-  .then(data => writeData(data))
+  .then(data => writeData(data, 'headphones'))
   .catch(err => console.error(err))
